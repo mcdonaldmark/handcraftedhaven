@@ -13,6 +13,7 @@ export default function Header() {
         className="hamburger"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle menu"
+        title={menuOpen ? "Close menu" : "Open menu"}
       >
         <span className="bar"></span>
         <span className="bar"></span>
