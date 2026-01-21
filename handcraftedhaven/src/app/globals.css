@@ -44,12 +44,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  position: relative;
+  /* needed for absolute hamburger */
 }
 
 .site-header ul {
   list-style: none;
   display: flex;
   flex-direction: column;
+  /* mobile: vertical */
   gap: 0.75rem;
   padding: 0;
   margin: 0;
@@ -63,6 +66,43 @@ body {
 
 .site-header a:hover {
   text-decoration: underline;
+}
+
+/* =========================
+   Hamburger Menu (Mobile Top-Right)
+   ========================= */
+.hamburger {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  /* above nav links */
+}
+
+.hamburger .bar {
+  height: 3px;
+  width: 100%;
+  background-color: white;
+  border-radius: 2px;
+}
+
+/* Hide nav by default on mobile */
+.site-header nav {
+  display: none;
+}
+
+.site-header nav.open {
+  display: block;
+  margin-top: 1rem;
 }
 
 /* =========================
@@ -109,6 +149,22 @@ body {
   padding: 3rem 1.5rem;
   max-width: 1100px;
   margin: auto;
+  display: block;
+  /* ensures centering works inside flex containers */
+}
+
+/* =========================
+   Center H3 on Mobile
+   ========================= */
+.section h3 {
+  display: block;
+  width: 100%;
+  text-align: center;
+  /* center on mobile */
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 1.5rem 0;
+  /* spacing above/below */
 }
 
 /* =========================
@@ -145,6 +201,11 @@ body {
    Tablet Styles (min-width: 768px)
    ================================================== */
 @media (min-width: 768px) {
+  .hamburger {
+    display: none;
+    /* hide hamburger on tablets+ */
+  }
+
   .site-header {
     flex-direction: row;
     justify-content: space-between;
@@ -153,8 +214,14 @@ body {
     padding: 1rem 2rem;
   }
 
-  .site-header ul {
+  /* Show nav and make links horizontal */
+  .site-header nav {
+    display: block !important;
+  }
+
+  .site-header nav ul {
     flex-direction: row;
+    /* horizontal nav on tablet+ */
     gap: 1.5rem;
   }
 
@@ -164,6 +231,12 @@ body {
 
   .features {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Tablet+ left-align H3 */
+  .section h3 {
+    text-align: left;
+    font-size: 2rem;
   }
 }
 
@@ -177,5 +250,16 @@ body {
 
   .section {
     padding: 4rem 2rem;
+  }
+
+  /* Ensure nav stays horizontal on desktop */
+  .site-header nav ul {
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  /* Desktop font size for H3 */
+  .section h3 {
+    font-size: 2.25rem;
   }
 }
