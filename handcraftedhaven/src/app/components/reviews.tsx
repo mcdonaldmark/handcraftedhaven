@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface Review {
   id: number;
@@ -9,6 +10,8 @@ interface Review {
 }
 
 export default function Reviews() {
+  const { data: session, status } = useSession();
+
   const [reviews, setReviews] = useState<Review[]>([
     { id: 1, rating: 5, comment: "Absolutely beautiful craftsmanship!" },
     { id: 2, rating: 4, comment: "Great quality, would buy again." },
@@ -40,13 +43,11 @@ export default function Reviews() {
     <section className="section">
       <h3>Customer Reviews</h3>
 
-      {/* Average Rating */}
       <div className="feature-card" style={{ marginBottom: "1.5rem" }}>
         <strong>Average Rating:</strong> {averageRating.toFixed(1)} ⭐ (
         {reviews.length} reviews)
       </div>
 
-      {/* Reviews List */}
       <div className="features">
         {reviews.map((review) => (
           <div key={review.id} className="feature-card">
@@ -59,40 +60,47 @@ export default function Reviews() {
         ))}
       </div>
 
-      {/* Review Form */}
       <h3>Leave a Review</h3>
 
-      <form onSubmit={handleSubmit} className="feature-card">
-        <label>
-          Rating
-          <select
-            value={rating}
-            onChange={(e) => setRating(Number(e.target.value))}
-            style={{ width: "100%", marginTop: "0.5rem" }}
-          >
-            {[5, 4, 3, 2, 1].map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
-        </label>
+      {status === "loading" && <p>Checking login status...</p>}
 
-        <label style={{ display: "block", marginTop: "1rem" }}>
-          Comment
-          <textarea
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            style={{ width: "100%", marginTop: "0.5rem" }}
-            placeholder="Share your experience..."
-          />
-        </label>
+      {!session && status !== "loading" && (
+        <p style={{ textAlign: "center" }}>Please log in to leave a review.</p>
+      )}
 
-        <button className="cta" type="submit" style={{ marginTop: "1rem" }}>
-          Submit Review
-        </button>
-      </form>
+      {session && (
+        <form onSubmit={handleSubmit} className="feature-card">
+          <label>
+            Rating
+            <select
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              style={{ width: "100%", marginTop: "0.5rem" }}
+            >
+              {[5, 4, 3, 2, 1].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label style={{ display: "block", marginTop: "1rem" }}>
+            Comment
+            <textarea
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              style={{ width: "100%", marginTop: "0.5rem" }}
+              placeholder="Share your experience..."
+            />
+          </label>
+
+          <button className="cta" type="submit" style={{ marginTop: "1rem" }}>
+            Submit Review
+          </button>
+        </form>
+      )}
     </section>
   );
 }
