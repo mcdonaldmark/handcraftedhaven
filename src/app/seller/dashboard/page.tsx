@@ -1,24 +1,34 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SellerDashboardPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
-  // Wait for auth to resolve
+  useEffect(() => {
+    if (status === "loading") return;
+
+    // Not logged in
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+
+    // Logged in but not an artisan
+    if (session.user?.role !== "artisan") {
+      router.push("/");
+    }
+  }, [session, status, router]);
+
   if (status === "loading") {
     return <p>Loading...</p>;
   }
 
-  // Not logged in
-  if (!session) {
-    redirect("/login");
-  }
-
-  // Logged in but not an artisan
-  if (session.user.role !== "artisan") {
-    redirect("/");
+  if (!session || session.user?.role !== "artisan") {
+    return null;
   }
 
   return (
