@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -11,25 +13,19 @@ export default function SellerDashboardPage() {
   useEffect(() => {
     if (status === "loading") return;
 
-    // Not logged in
     if (!session) {
       router.push("/login");
       return;
     }
 
-    // Logged in but not an artisan
     if (session.user?.role !== "artisan") {
       router.push("/");
+      return;
     }
   }, [session, status, router]);
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (!session || session.user?.role !== "artisan") {
-    return null;
-  }
+  if (status === "loading") return <p>Loading...</p>;
+  if (!session || session.user?.role !== "artisan") return null;
 
   return (
     <section className="section">
