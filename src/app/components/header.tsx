@@ -1,30 +1,46 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <header className="site-header">
       <h1>Handcrafted Haven</h1>
-      <button
-        className="hamburger"
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Toggle menu"
-        title={menuOpen ? "Close menu" : "Open menu"}
-      >
-        <span className="bar"></span>
-        <span className="bar"></span>
-        <span className="bar"></span>
-      </button>
-      <nav className={menuOpen ? 'open' : ''}>
+
+      <nav>
         <ul>
-          <li><Link href="/">Home</Link></li>
-          <li><Link href="/shop">Shop</Link></li>
-          <li><Link href="/categories">Categories</Link></li>
-          <li><Link href="/login">Login</Link></li>
+          <li>
+            <Link href="/">Home</Link>
+          </li>
+          <li>
+            <Link href="/shop">Shop</Link>
+          </li>
+          <li>
+            <Link href="/categories">Categories</Link>
+          </li>
+
+          {session?.user?.role === "artisan" && (
+            <li>
+              <Link href="/seller/dashboard">Dashboard</Link>
+            </li>
+          )}
+
+          {!session && (
+            <li>
+              <Link href="/login">Login</Link>
+            </li>
+          )}
+
+          {session && (
+            <li>
+              <button onClick={() => signOut()} className="cta">
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
       </nav>
     </header>

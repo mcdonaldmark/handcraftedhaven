@@ -1,71 +1,86 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const [role, setRole] = useState<"customer" | "artisan">("customer");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, role }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Signup failed");
+      return;
+    }
+
+    router.push("/login");
+  }
 
   return (
     <section className="section" style={{ maxWidth: 600 }}>
       <h3>Create an Account</h3>
 
-      <form className="feature-card">
-        {/* Role selection */}
+      <form className="feature-card" onSubmit={handleSubmit}>
         <fieldset>
           <legend>
             <strong>Account Type</strong>
           </legend>
 
-          <label style={{ display: "block", marginTop: "0.5rem" }}>
+          <label>
             <input
               type="radio"
-              name="role"
-              value="customer"
               checked={role === "customer"}
               onChange={() => setRole("customer")}
             />{" "}
-            Customer (Shop & review products)
+            Customer
           </label>
 
-          <label style={{ display: "block", marginTop: "0.5rem" }}>
+          <label>
             <input
               type="radio"
-              name="role"
-              value="artisan"
               checked={role === "artisan"}
               onChange={() => setRole("artisan")}
             />{" "}
-            Artisan (Sell handmade goods)
+            Artisan
           </label>
         </fieldset>
 
-        {/* Common fields */}
-        <label style={{ display: "block", marginTop: "1rem" }}>
+        <label>
           Email
-          <input type="email" required style={{ width: "100%" }} />
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </label>
 
-        <label style={{ display: "block", marginTop: "1rem" }}>
+        <label>
           Password
-          <input type="password" required style={{ width: "100%" }} />
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </label>
 
-        {/* Artisan-only fields */}
-        {role === "artisan" && (
-          <>
-            <label style={{ display: "block", marginTop: "1rem" }}>
-              Shop Name
-              <input type="text" style={{ width: "100%" }} />
-            </label>
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <label style={{ display: "block", marginTop: "1rem" }}>
-              Artisan Bio
-              <textarea rows={4} style={{ width: "100%" }} />
-            </label>
-          </>
-        )}
-
-        <button className="cta" style={{ marginTop: "1.5rem" }}>
+        <button className="cta" type="submit">
           Create Account
         </button>
       </form>
