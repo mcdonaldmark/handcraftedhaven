@@ -56,7 +56,7 @@ export default function SellerDashboardPage() {
 
   const handleAddUrl = () => {
     if (!currentUrl) return;
-    if (imageUrls.includes(currentUrl)) return; // prevent duplicates
+    if (imageUrls.includes(currentUrl)) return;
     setImageUrls((prev) => [...prev, currentUrl]);
     setCurrentUrl("");
   };
@@ -84,7 +84,6 @@ export default function SellerDashboardPage() {
     formData.append("categoryId", categoryId);
     formData.append("artisanId", session.user.id);
 
-    // Add all image URLs
     imageUrls.forEach((url) => formData.append("imageUrls", url));
 
     try {
@@ -159,7 +158,6 @@ export default function SellerDashboardPage() {
           />
         </label>
 
-        {/* Image URL input */}
         <label>
           Image URL
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -176,7 +174,6 @@ export default function SellerDashboardPage() {
           </div>
         </label>
 
-        {/* Show thumbnails */}
         {imageUrls.length > 0 && (
           <div
             style={{
