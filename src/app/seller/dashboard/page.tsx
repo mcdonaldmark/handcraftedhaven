@@ -19,7 +19,8 @@ export default function SellerDashboardPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [currentUrl, setCurrentUrl] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,17 +54,28 @@ export default function SellerDashboardPage() {
   if (status === "loading") return <p>Loading...</p>;
   if (!session || session.user?.role !== "artisan") return null;
 
+  const handleAddUrl = () => {
+    if (!currentUrl) return;
+    if (imageUrls.includes(currentUrl)) return; // prevent duplicates
+    setImageUrls((prev) => [...prev, currentUrl]);
+    setCurrentUrl("");
+  };
+
+  const handleRemoveUrl = (index: number) => {
+    setImageUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    setMessage("");
-    if (!name || !price || !categoryId || imageFiles.length === 0) {
-      setMessage("All fields including at least one image are required.");
+    if (!name || !price || !categoryId || imageUrls.length === 0) {
+      setMessage("All fields including at least one image URL are required.");
       return;
     }
 
     setIsSubmitting(true);
+    setMessage("");
 
     const formData = new FormData();
     formData.append("name", name);
@@ -72,14 +84,14 @@ export default function SellerDashboardPage() {
     formData.append("categoryId", categoryId);
     formData.append("artisanId", session.user.id);
 
-    imageFiles.forEach((file) => formData.append("images", file));
+    // Add all image URLs
+    imageUrls.forEach((url) => formData.append("imageUrls", url));
 
     try {
       const res = await fetch("/api/products", {
         method: "POST",
         body: formData,
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -93,33 +105,13 @@ export default function SellerDashboardPage() {
       setDescription("");
       setPrice("");
       setCategoryId("");
-      setImageFiles([]);
+      setImageUrls([]);
     } catch (err) {
       console.error(err);
       setMessage("An error occurred.");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(e.target.files || []);
-
-    setImageFiles((prev) => {
-      const filtered = newFiles.filter(
-        (newFile) =>
-          !prev.some(
-            (file) => file.name === newFile.name && file.size === newFile.size,
-          ),
-      );
-      return [...prev, ...filtered];
-    });
-
-    e.target.value = "";
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -167,31 +159,25 @@ export default function SellerDashboardPage() {
           />
         </label>
 
-        <div style={{ textAlign: "center", marginTop: "1rem" }}>
-          <label
-            htmlFor="image-upload"
-            style={{
-              display: "inline-block",
-              padding: "10px 20px",
-              border: "1px solid #ccc",
-              borderRadius: "6px",
-              backgroundColor: "#f4f4f4",
-              cursor: "pointer",
-            }}
-          >
-            Upload Product Images
-          </label>
-          <input
-            id="image-upload"
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-            style={{ display: "none" }}
-          />
-        </div>
+        {/* Image URL input */}
+        <label>
+          Image URL
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <input
+              type="url"
+              value={currentUrl}
+              onChange={(e) => setCurrentUrl(e.target.value)}
+              placeholder="Enter image URL"
+              style={{ width: "100%", height: "65px" }}
+            />
+            <button type="button" onClick={handleAddUrl}>
+              Add
+            </button>
+          </div>
+        </label>
 
-        {imageFiles.length > 0 && (
+        {/* Show thumbnails */}
+        {imageUrls.length > 0 && (
           <div
             style={{
               display: "flex",
@@ -201,18 +187,18 @@ export default function SellerDashboardPage() {
               justifyContent: "center",
             }}
           >
-            {imageFiles.map((file, idx) => (
+            {imageUrls.map((url, idx) => (
               <div key={idx} style={{ position: "relative" }}>
                 <img
-                  src={URL.createObjectURL(file)}
-                  alt={file.name}
+                  src={url}
+                  alt={`image-${idx}`}
                   width={80}
                   height={80}
                   style={{ objectFit: "cover", borderRadius: "4px" }}
                 />
                 <button
                   type="button"
-                  onClick={() => handleRemoveImage(idx)}
+                  onClick={() => handleRemoveUrl(idx)}
                   style={{
                     position: "absolute",
                     top: -5,
@@ -255,7 +241,7 @@ export default function SellerDashboardPage() {
           style={{ marginTop: "1.5rem" }}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Uploading..." : "Add Product"}
+          {isSubmitting ? "Adding..." : "Add Product"}
         </button>
       </form>
     </section>
