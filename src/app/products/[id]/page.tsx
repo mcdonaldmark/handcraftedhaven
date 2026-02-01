@@ -78,7 +78,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p>
                 <strong>Artisan:</strong> {product.artisan.name}
               </p>
-              <a href={`/sellers/${product.artisanId}`} className="cta">
+              {/* ✅ Correct link to artisan page */}
+              <a href={`/sellers/${product.artisan.id}`} className="cta">
                 View Artisan Profile
               </a>
             </div>

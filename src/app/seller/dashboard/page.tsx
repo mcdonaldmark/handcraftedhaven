@@ -82,7 +82,6 @@ export default function SellerDashboardPage() {
     formData.append("description", description);
     formData.append("price", price);
     formData.append("categoryId", categoryId);
-    formData.append("artisanId", session.user.id);
 
     imageUrls.forEach((url) => formData.append("imageUrls", url));
 
