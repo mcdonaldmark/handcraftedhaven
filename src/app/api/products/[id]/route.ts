@@ -1,19 +1,21 @@
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+
+const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
-
   try {
+    const { id } = await context.params;
+
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
+        artisan: true,
         images: true,
         category: true,
-        artisan: true,
       },
     });
 
@@ -24,6 +26,9 @@ export async function GET(
     return NextResponse.json(product);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "An unexpected error occurred" },
+      { status: 500 }
+    );
   }
 }
