@@ -1,30 +1,91 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import fs from "fs";
+import path from "path";
 
-const prisma = new PrismaClient();
+export const config = {
+  api: {
+    bodyParser: false, // allow raw FormData
+  },
+};
 
-export async function GET() {
-    try {
-        const products = await prisma.product.findMany({
-            include: {
-                images: true,
-                category: true,
-                artisan: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                    },
-                },
-            }
-        });
+export async function POST(req: Request) {
+  try {
+    const formData = await req.formData();
 
-        return NextResponse.json(products);
-    } catch (error) {
-        console.error("Error fetching products:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString() || "";
+    const price = parseFloat(formData.get("price")?.toString() || "0");
+    const categoryId = formData.get("categoryId")?.toString();
+    const artisanId = formData.get("artisanId")?.toString();
+
+    if (!name || !price || !categoryId || !artisanId) {
+      return NextResponse.json(
+        { error: "All fields including at least one image are required." },
+        { status: 400 }
+      );
     }
+
+    // Get all uploaded images
+    const blobs = formData.getAll("images") as Blob[];
+    if (blobs.length === 0) {
+      return NextResponse.json(
+        { error: "At least one image is required." },
+        { status: 400 }
+      );
+    }
+
+    // Optional: remove duplicates by filename
+    const uniqueBlobs = blobs.filter(
+      (blob, index, self) =>
+        index === self.findIndex((b) => (b as any).name === (blob as any).name)
+    );
+
+    // Save images to public/uploads
+    const uploadsDir = path.join(process.cwd(), "public/uploads");
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+    const savedImages = [];
+
+    for (const imageFile of uniqueBlobs) {
+      const arrayBuffer = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const fileName = `${Date.now()}-${name.replace(/\s+/g, "-")}-${Math.floor(
+        Math.random() * 10000
+      )}.png`;
+      const filePath = path.join(uploadsDir, fileName);
+
+      fs.writeFileSync(filePath, buffer);
+
+      savedImages.push({ url: `/uploads/${fileName}`, alt: name });
+    }
+
+    // Create product with images
+    const product = await prisma.product.create({
+      data: {
+        name,
+        description,
+        price,
+        category: { connect: { id: categoryId } },
+        artisan: { connect: { id: artisanId } },
+        images: {
+          create: savedImages,
+        },
+      },
+      include: {
+        images: true,
+        category: true,
+        artisan: true,
+      },
+    });
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return NextResponse.json(
+      { error: "Failed to create product." },
+      { status: 500 }
+    );
+  }
 }
