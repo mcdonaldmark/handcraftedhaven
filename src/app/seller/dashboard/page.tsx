@@ -72,7 +72,6 @@ export default function SellerDashboardPage() {
     formData.append("categoryId", categoryId);
     formData.append("artisanId", session.user.id);
 
-    // Append all images
     imageFiles.forEach((file) => formData.append("images", file));
 
     try {
@@ -107,7 +106,6 @@ export default function SellerDashboardPage() {
     const newFiles = Array.from(e.target.files || []);
 
     setImageFiles((prev) => {
-      // Prevent duplicates based on file name + size
       const filtered = newFiles.filter(
         (newFile) =>
           !prev.some(
@@ -117,7 +115,6 @@ export default function SellerDashboardPage() {
       return [...prev, ...filtered];
     });
 
-    // Reset input so the same file can be selected again if needed
     e.target.value = "";
   };
 
@@ -170,7 +167,6 @@ export default function SellerDashboardPage() {
           />
         </label>
 
-        {/* Centered multiple file upload */}
         <div style={{ textAlign: "center", marginTop: "1rem" }}>
           <label
             htmlFor="image-upload"
@@ -195,7 +191,6 @@ export default function SellerDashboardPage() {
           />
         </div>
 
-        {/* Show thumbnails of all selected images */}
         {imageFiles.length > 0 && (
           <div
             style={{

@@ -5,7 +5,7 @@ import path from "path";
 
 export const config = {
   api: {
-    bodyParser: false, // allow raw FormData
+    bodyParser: false,
   },
 };
 
@@ -26,7 +26,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Get all uploaded images
     const blobs = formData.getAll("images") as Blob[];
     if (blobs.length === 0) {
       return NextResponse.json(
@@ -35,13 +34,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Optional: remove duplicates by filename
     const uniqueBlobs = blobs.filter(
       (blob, index, self) =>
         index === self.findIndex((b) => (b as any).name === (blob as any).name)
     );
 
-    // Save images to public/uploads
     const uploadsDir = path.join(process.cwd(), "public/uploads");
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
@@ -61,7 +58,6 @@ export async function POST(req: Request) {
       savedImages.push({ url: `/uploads/${fileName}`, alt: name });
     }
 
-    // Create product with images
     const product = await prisma.product.create({
       data: {
         name,
