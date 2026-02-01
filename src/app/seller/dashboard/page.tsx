@@ -34,7 +34,7 @@ export default function SellerDashboardPage() {
       <form className="feature-card">
         <label>
           Product Name
-          <input type="text" style={{ width: "100%" }} />
+          <input type="text" style={{ width: "100%", height: "65px" }} />
         </label>
 
         <label style={{ marginTop: "1rem", display: "block" }}>
@@ -44,7 +44,7 @@ export default function SellerDashboardPage() {
 
         <label style={{ marginTop: "1rem", display: "block" }}>
           Price
-          <input type="number" style={{ width: "100%" }} />
+          <input type="number" style={{ width: "100%", height: "65px" }} />
         </label>
 
         <button className="cta" style={{ marginTop: "1.5rem" }}>
