@@ -11,6 +11,7 @@ export default function SignupPage() {
   const [bio, setBio] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const [name, setName] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,6 +24,7 @@ export default function SignupPage() {
         email,
         password,
         role,
+        name,
         shopName,
         bio,
       }),
@@ -67,6 +69,18 @@ export default function SignupPage() {
         </fieldset>
 
         <label className="auth-field">
+          Full Name
+          <input
+            className="auth-input"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your full name"
+            required
+          />
+        </label>
+
+        <label className="auth-field">
           Email
           <input
             className="auth-input"
@@ -91,7 +105,7 @@ export default function SignupPage() {
         {role === "artisan" && (
           <>
             <label className="auth-field">
-              Shop Name
+              Your Shop Name
               <input
                 className="auth-input"
                 type="text"

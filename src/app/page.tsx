@@ -7,7 +7,7 @@ export default function HomePage() {
           Handcrafted Haven connects passionate artisans with customers who
           value creativity, quality, and originality.
         </p>
-        <a className="cta" href="#">
+        <a className="cta" href="/shop">
           Start Shopping
         </a>
       </section>

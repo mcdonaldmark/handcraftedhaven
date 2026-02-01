@@ -1,21 +1,20 @@
-export default function CategoriesPage() {
-  const categories = [
-    "Ceramics",
-    "Textiles",
-    "Home Decor",
-    "Jewelry",
-    "Art Prints",
-  ];
+import { prisma } from "@/lib/prisma";
+
+export default async function CategoriesPage() {
+
+  const categories = await prisma.category.findMany();
 
   return (
     <section className="section">
       <h3>Browse by Category</h3>
-
       <div className="features">
         {categories.map((category) => (
-          <div key={category} className="feature-card">
-            <h4>{category}</h4>
-            <p>Explore handmade {category.toLowerCase()}.</p>
+          <div key={category.id} className="feature-card">
+            <h4>{category.name}</h4>
+            <p>Explore {category.name.toLowerCase()}.</p>
+            <a className="cta" href={`/categories/${category.id}`}>
+              View Category
+            </a>
           </div>
         ))}
       </div>
