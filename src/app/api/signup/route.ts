@@ -5,7 +5,11 @@ import { hash } from "bcryptjs";
 const ALLOWED_ROLES = ["customer", "artisan"] as const;
 
 export async function POST(req: Request) {
-  const { email, password, role } = await req.json();
+  const data = await req.json()
+  const { email, password, role, name, shopName, bio } = data;
+
+
+  console.log(data);
 
   if (!email || !password || !ALLOWED_ROLES.includes(role)) {
     return NextResponse.json(
@@ -23,10 +27,15 @@ export async function POST(req: Request) {
   }
 
   const hashedPassword = await hash(password, 10);
-
-  await prisma.user.create({
-    data: { email, password: hashedPassword, role },
-  });
+  if (role === "artisan") {
+    await prisma.user.create({
+      data: { email, password: hashedPassword, role, name, shopName, bio },
+    });
+  } else {
+    await prisma.user.create({
+      data: { email, password: hashedPassword, role, name },
+    });
+  }
 
   return NextResponse.json({ success: true });
 }

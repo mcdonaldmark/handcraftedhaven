@@ -8,6 +8,8 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: session } = useSession();
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header className="site-header">
       <h1>Handcrafted Haven</h1>
@@ -16,7 +18,6 @@ export default function Header() {
         className="hamburger"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle menu"
-        title={menuOpen ? "Close menu" : "Open menu"}
       >
         <span className="bar"></span>
         <span className="bar"></span>
@@ -24,7 +25,7 @@ export default function Header() {
       </button>
 
       <nav className={menuOpen ? "open" : ""}>
-        <ul>
+        <ul onClick={closeMenu}>
           <li>
             <Link href="/">Home</Link>
           </li>
@@ -35,23 +36,28 @@ export default function Header() {
             <Link href="/categories">Categories</Link>
           </li>
 
-          {!session && (
+          {!session ? (
             <li>
               <Link href="/login">Login</Link>
             </li>
-          )}
-
-          {session && (
+          ) : (
             <>
-              {session.user.role === "artisan" && (
+
+              {session.user?.role === "artisan" && (
                 <li>
                   <Link href="/seller/dashboard">Dashboard</Link>
                 </li>
               )}
+
+              <li>
+                <Link href="/profile">My Profile</Link>
+              </li>
+
               <li>
                 <button
                   className="nav-logout"
                   onClick={() => signOut({ callbackUrl: "/" })}
+                  style={{ cursor: 'pointer', background: 'none', border: 'none', color: 'inherit', font: 'inherit' }}
                 >
                   Logout
                 </button>

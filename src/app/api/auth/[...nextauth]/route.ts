@@ -7,6 +7,9 @@ type AuthUser = {
   id: string;
   email: string;
   role: "customer" | "artisan";
+  name: string | null;
+  shopName: string | null;
+  bio: string | null;
 };
 
 export const authOptions: NextAuthOptions = {
@@ -30,23 +33,52 @@ export const authOptions: NextAuthOptions = {
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
 
+
         return {
           id: user.id,
           email: user.email,
           role: user.role as "customer" | "artisan",
+          name: user.name,
+          shopName: user.shopName,
+          bio: user.bio,
         };
       },
     }),
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) token.role = user.role;
+    async jwt({ token, user, trigger, session }) {
+
+      if (user) {
+        const authUser = user as AuthUser;
+        token.role = authUser.role;
+        token.shopName = authUser.shopName;
+        token.bio = authUser.bio;
+        token.name = authUser.name;
+        token.id = authUser.id;
+      }
+
+
+      if (trigger === "update" && session) {
+
+        return {
+          ...token,
+          name: session.name ?? token.name,
+          shopName: session.shopName ?? token.shopName,
+          bio: session.bio ?? token.bio
+        };
+      }
+
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role as "customer" | "artisan";
+        (session.user as any).role = token.role;
+        (session.user as any).shopName = token.shopName;
+        (session.user as any).bio = token.bio;
+        session.user.name = token.name;
+        (session.user as any).id = token.id;
       }
       return session;
     },

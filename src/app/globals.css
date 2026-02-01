@@ -12,12 +12,18 @@
 
 body {
   font-family: 'Open Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
   margin: 0;
   background-color: var(--background);
   color: var(--text);
   line-height: 1.6;
+  min-height: 100vh;
 }
 
+main {
+  flex: 1;
+}
 
 .site-header,
 .site-footer {
@@ -195,6 +201,90 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: 500;
+}
+
+.profile-container {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.edit-trigger {
+  background: transparent;
+  border: 1px solid #000;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.input-group input,
+.input-group textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.input-group input:disabled,
+.input-group textarea:disabled {
+  background: #f5f5f5;
+  color: #888;
+  border-color: #eee;
+  cursor: not-allowed;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 500;
 }
 

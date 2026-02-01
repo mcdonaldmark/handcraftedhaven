@@ -1,32 +1,53 @@
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+
 interface SellerPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default function SellerPage({ params }: SellerPageProps) {
-  const products = [
-    { id: 1, name: "Ceramic Mug", price: 28 },
-    { id: 2, name: "Clay Vase", price: 55 },
-  ];
+export default async function SellerPage({ params }: SellerPageProps) {
+
+  const { id } = await params;
+
+  const artisan = await prisma.user.findFirst({
+    where: { id, role: 'artisan' }, //find by role to be artisan
+    include: {
+      products: {
+        include: {
+          images: true,
+        },
+      },
+    },
+  });
+
+  console.log(artisan);
+
+  if (!artisan) notFound();
 
   return (
     <section className="section">
       <h3>Artisan Profile</h3>
 
       <div className="feature-card">
-        <h4>Artisan #{params.id}</h4>
+        <h4>{artisan.name}</h4>
+        <p style={{ fontStyle: "italic", textAlign: "left" }}>
+          {artisan.bio}
+        </p>
         <p>
-          Passionate creator specializing in handcrafted ceramics inspired by
-          nature and simplicity.
+          <strong>Shop: </strong>{artisan.shopName}
         </p>
       </div>
 
       <h3>Products by This Artisan</h3>
 
       <div className="features">
-        {products.map((product) => (
+        {artisan.products.map((product) => (
           <div key={product.id} className="feature-card">
             <h4>{product.name}</h4>
-            <p>${product.price}</p>
+            <p>${product.price.toString()}</p>
+            <p>
+              <img src={product.images[0].url} alt={product.images[0].alt || ""} width={100} height={100} />
+            </p>
             <a className="cta" href={`/products/${product.id}`}>
               View Product
             </a>
