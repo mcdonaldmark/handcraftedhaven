@@ -36,13 +36,19 @@ export default function Header() {
             <Link href="/categories">Categories</Link>
           </li>
 
+          {/* Only show Cart link if user is logged in */}
+          {session?.user?.role && (
+            <li>
+              <Link href="/cart">Cart</Link>
+            </li>
+          )}
+
           {!session ? (
             <li>
               <Link href="/login">Login</Link>
             </li>
           ) : (
             <>
-
               {session.user?.role === "artisan" && (
                 <li>
                   <Link href="/seller/dashboard">Dashboard</Link>
@@ -57,7 +63,13 @@ export default function Header() {
                 <button
                   className="nav-logout"
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  style={{ cursor: 'pointer', background: 'none', border: 'none', color: 'inherit', font: 'inherit' }}
+                  style={{
+                    cursor: "pointer",
+                    background: "none",
+                    border: "none",
+                    color: "inherit",
+                    font: "inherit",
+                  }}
                 >
                   Logout
                 </button>
