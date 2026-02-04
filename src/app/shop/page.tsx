@@ -22,7 +22,6 @@ export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
-  // Fetch categories & products from API
   const fetchData = async () => {
     try {
       const [catRes, prodRes] = await Promise.all([
@@ -68,7 +67,6 @@ export default function ShopPage() {
     }
   };
 
-  // Filter products by selected category
   const filteredProducts = selectedCategory
     ? products.filter((p) => p.category.id === selectedCategory)
     : products;
@@ -77,7 +75,6 @@ export default function ShopPage() {
     <section className="section">
       <h2>Shop</h2>
 
-      {/* Category Filter */}
       <div style={{ marginBottom: "1rem" }}>
         <select
           value={selectedCategory}
@@ -92,7 +89,6 @@ export default function ShopPage() {
         </select>
       </div>
 
-      {/* Products Grid */}
       <div
         style={{
           display: "grid",
@@ -123,7 +119,6 @@ export default function ShopPage() {
             <h4>{product.name}</h4>
             <p>${product.price.toFixed(2)}</p>
 
-            {/* View Product Button (Home page color #7A9B8E) */}
             <Link
               href={`/products/${product.id}`}
               style={{
@@ -140,7 +135,6 @@ export default function ShopPage() {
               View Product
             </Link>
 
-            {/* Buy It Now Button */}
             <button
               onClick={() => handleBuyItNow(product)}
               style={{

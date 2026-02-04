@@ -8,7 +8,6 @@ interface CartItem {
   imageUrl?: string;
 }
 
-// Temporary in-memory cart (replace with DB for production)
 let cart: CartItem[] = [];
 
 export async function GET() {

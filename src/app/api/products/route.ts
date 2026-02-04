@@ -10,7 +10,6 @@ export async function GET() {
       },
     });
 
-    // Convert Decimal to number
     const result = products.map((p) => ({
       ...p,
       price: Number(p.price),

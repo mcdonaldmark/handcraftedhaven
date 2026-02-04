@@ -36,7 +36,6 @@ export default function Header() {
             <Link href="/categories">Categories</Link>
           </li>
 
-          {/* Only show Cart link if user is logged in */}
           {session?.user?.role && (
             <li>
               <Link href="/cart">Cart</Link>
