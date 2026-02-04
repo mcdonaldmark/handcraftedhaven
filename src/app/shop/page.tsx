@@ -25,27 +25,50 @@ export default async function ShopPage() {
       <div className="features">
         {products.map((product) => (
           <div key={product.id} className="feature-card">
+
+            {/* Image */}
             {product.images.length > 0 && (
-              <img
-                src={product.images[0].url}
-                alt={product.images[0].alt || product.name}
-                style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }}
-              />
+              <div className="feature-card__image">
+                <img
+                  src={product.images[0].url}
+                  alt={product.images[0].alt || product.name}
+                  loading="lazy"
+                />
+              </div>
             )}
 
-            <h4>{product.name}</h4>
-            <p>Category: {product.category.name}</p>
-            <p><strong>${product.price.toString()}</strong></p>
+            {/* Content */}
+            <div className="feature-card__content">
 
-            <a className="cta" href={`/products/${product.id}`}>
-              View Product
-            </a>
+              <span className="feature-card__category">
+                {product.category.name}
+              </span>
 
-            <p style={{ marginTop: "0.5rem" }}>
-              <a href={`/sellers/${product.artisanId}`}>View Artisan</a>
-            </p>
+              <h4 className="feature-card__title">
+                {product.name}
+              </h4>
+
+              <div className="feature-card__footer">
+                <span className="feature-card__price">
+                  ${product.price.toString()}
+                </span>
+
+                <a className="cta" href={`/products/${product.id}`}>
+                  View Product
+                </a>
+              </div>
+
+              <a
+                className="feature-card__artisan"
+                href={`/sellers/${product.artisanId}`}
+              >
+                View Artisan
+              </a>
+
+            </div>
           </div>
         ))}
+
       </div>
     </section>
   );
