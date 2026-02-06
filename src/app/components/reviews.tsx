@@ -65,7 +65,7 @@ export default function Reviews({ reviews, productId }: { reviews: Review[]; pro
   const averageRating =
     reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
-  console.log(productId)
+  console.log(session)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -106,6 +106,26 @@ export default function Reviews({ reviews, productId }: { reviews: Review[]; pro
     }
   }
 
+
+
+  async function handleDelete(reviewId: string) {
+    try {
+      const response = await fetch(`/api/products/${productId}/reviews/${reviewId}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+
+      router.refresh();
+    } catch (error: any) {
+      setError(error.message);
+    }
+  }
+
   return (
     <section className="section">
       <h3>Customer Reviews</h3>
@@ -125,6 +145,13 @@ export default function Reviews({ reviews, productId }: { reviews: Review[]; pro
             <p>{review.comment}</p>
             <small>By {review.user.name} </small>
             <small> Reviewed on {new Date(review.createdAt).toLocaleDateString()}</small>
+            {session?.user.id === review.user.id &&
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+                <button style={{ backgroundColor: "red", color: "white", padding: "0.5rem 1rem", borderRadius: "8px", border: "none", cursor: "pointer" }}
+                  onClick={() => handleDelete(review.id)}>Delete Review</button>
+              </div>
+            }
+
           </div>
         ))}
       </div>
