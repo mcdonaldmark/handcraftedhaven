@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 
 interface Category {
   id: string;
@@ -19,7 +18,6 @@ interface Product {
 }
 
 export default function ShopPage() {
-  const { data: session } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -69,7 +67,7 @@ export default function ShopPage() {
     }
   };
 
-  // Only show categories if no user is logged in
+  // Filter products by selected category
   const filteredProducts = selectedCategory
     ? products.filter((p) => p.category.id === selectedCategory)
     : products;
@@ -78,22 +76,49 @@ export default function ShopPage() {
     <section className="section">
       <h2>Shop</h2>
 
-      {/* Hide categories dropdown if logged in */}
-      {!session && (
-        <div style={{ marginBottom: "1rem" }}>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+      {/* Category Filter Bar */}
+      <div
+        style={{
+          marginBottom: "1rem",
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <button
+          onClick={() => setSelectedCategory("")}
+          style={{
+            padding: "0.5rem 1rem",
+            borderRadius: "6px",
+            border:
+              selectedCategory === "" ? "2px solid #7A9B8E" : "1px solid #ccc",
+            background: selectedCategory === "" ? "#7A9B8E" : "#fff",
+            color: selectedCategory === "" ? "#fff" : "#000",
+            cursor: "pointer",
+          }}
+        >
+          All
+        </button>
+        {categories.map((c) => (
+          <button
+            key={c.id}
+            onClick={() => setSelectedCategory(c.id)}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: "6px",
+              border:
+                selectedCategory === c.id
+                  ? "2px solid #7A9B8E"
+                  : "1px solid #ccc",
+              background: selectedCategory === c.id ? "#7A9B8E" : "#fff",
+              color: selectedCategory === c.id ? "#fff" : "#000",
+              cursor: "pointer",
+            }}
           >
-            <option value="">All Categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+            {c.name}
+          </button>
+        ))}
+      </div>
 
       <div
         style={{

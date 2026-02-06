@@ -6,19 +6,24 @@ import { useState } from "react";
 
 export default function Header() {
   const { data: session } = useSession();
-  const [navOpen, setNavOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="site-header">
-      <h1>Handcrafted Haven</h1>
+      <div className="logo">
+        <Link href="/">Handcrafted Haven</Link>
+      </div>
 
-      <button className="hamburger" onClick={() => setNavOpen(!navOpen)}>
+      <button
+        className="hamburger"
+        onClick={() => setMenuOpen((prev) => !prev)}
+      >
         <span className="bar"></span>
         <span className="bar"></span>
         <span className="bar"></span>
       </button>
 
-      <nav className={navOpen ? "open" : ""}>
+      <nav className={menuOpen ? "open" : ""}>
         <ul>
           <li>
             <Link href="/">Home</Link>
@@ -31,33 +36,38 @@ export default function Header() {
           )}
 
           {session && (
-            <li>
-              <Link href="/shop">Shop</Link>
-            </li>
-          )}
-
-          {session ? (
             <>
+              <li>
+                <Link href="/shop">Shop</Link>
+              </li>
               <li>
                 <Link href="/profile">Profile</Link>
               </li>
-              {session.user.role === "artisan" && (
+              <li>
+                <Link href="/cart">Cart</Link>
+              </li>
+              {session.user?.role === "artisan" && (
                 <li>
                   <Link href="/seller/dashboard">Dashboard</Link>
                 </li>
               )}
-              <li>
-                <button
-                  className="nav-logout"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                  Logout
-                </button>
-              </li>
             </>
-          ) : (
+          )}
+
+          {!session && (
             <li>
               <Link href="/login">Login</Link>
+            </li>
+          )}
+
+          {session && (
+            <li>
+              <button
+                className="nav-logout"
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                Logout
+              </button>
             </li>
           )}
         </ul>
