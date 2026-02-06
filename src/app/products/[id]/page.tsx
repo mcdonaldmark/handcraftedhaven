@@ -18,6 +18,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
       artisan: true,
       images: true,
       category: true,
+      reviews: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
@@ -87,7 +92,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </section>
 
-      <Reviews />
+      <Reviews reviews={product.reviews} productId={product.id} />
     </>
   );
 }

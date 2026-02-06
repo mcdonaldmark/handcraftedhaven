@@ -153,6 +153,7 @@ export default function ShopPage() {
             </button>
           </div>
         ))}
+
       </div>
     </section>
   );

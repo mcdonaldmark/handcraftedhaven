@@ -1,3 +1,5 @@
+import TopRatedProducts from "./components/topProducts";
+
 export default function HomePage() {
   return (
     <>
@@ -10,6 +12,10 @@ export default function HomePage() {
         <a className="cta" href="/shop">
           Start Shopping
         </a>
+      </section>
+
+      <section className="section">
+        <TopRatedProducts />
       </section>
 
       <section className="section">
@@ -38,6 +44,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+
 
       <section className="section about">
         <h3>About Handcrafted Haven</h3>

@@ -16,6 +16,7 @@ model User {
   shopName String?
   bio      String?
   products Product[]
+  reviews  Review[]
 }
 
 model ProductImage {
@@ -42,4 +43,19 @@ model Product {
   artisan     User           @relation(fields: [artisanId], references: [id])
   category    Category       @relation(fields: [categoryId], references: [id])
   images      ProductImage[]
+  reviews     Review[]
+}
+
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  @@unique([userId, productId])
 }
