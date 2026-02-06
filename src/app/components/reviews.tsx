@@ -11,6 +11,7 @@ interface Review {
   createdAt: Date;
   user: {
     name: string;
+    id: string;
   };
 }
 
