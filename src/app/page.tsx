@@ -1,6 +1,11 @@
+"use client";
+
 import TopRatedProducts from "./components/topProducts";
+import { useSession } from "next-auth/react";
 
 export default function HomePage() {
+  const { data: session } = useSession();
+
   return (
     <>
       <section className="hero">
@@ -9,7 +14,7 @@ export default function HomePage() {
           Handcrafted Haven connects passionate artisans with customers who
           value creativity, quality, and originality.
         </p>
-        <a className="cta" href="/shop">
+        <a className="cta" href={session ? "/shop" : "/login"}>
           Start Shopping
         </a>
       </section>
@@ -44,8 +49,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-
 
       <section className="section about">
         <h3>About Handcrafted Haven</h3>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 interface Category {
   id: string;
@@ -18,6 +19,7 @@ interface Product {
 }
 
 export default function ShopPage() {
+  const { data: session } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -67,6 +69,7 @@ export default function ShopPage() {
     }
   };
 
+  // Only show categories if no user is logged in
   const filteredProducts = selectedCategory
     ? products.filter((p) => p.category.id === selectedCategory)
     : products;
@@ -75,19 +78,22 @@ export default function ShopPage() {
     <section className="section">
       <h2>Shop</h2>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Hide categories dropdown if logged in */}
+      {!session && (
+        <div style={{ marginBottom: "1rem" }}>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div
         style={{
@@ -153,7 +159,6 @@ export default function ShopPage() {
             </button>
           </div>
         ))}
-
       </div>
     </section>
   );

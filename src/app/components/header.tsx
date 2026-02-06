@@ -1,79 +1,64 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const { data: session } = useSession();
-
-  const closeMenu = () => setMenuOpen(false);
+  const [navOpen, setNavOpen] = useState(false);
 
   return (
     <header className="site-header">
       <h1>Handcrafted Haven</h1>
 
-      <button
-        className="hamburger"
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Toggle menu"
-      >
+      <button className="hamburger" onClick={() => setNavOpen(!navOpen)}>
         <span className="bar"></span>
         <span className="bar"></span>
         <span className="bar"></span>
       </button>
 
-      <nav className={menuOpen ? "open" : ""}>
-        <ul onClick={closeMenu}>
+      <nav className={navOpen ? "open" : ""}>
+        <ul>
           <li>
             <Link href="/">Home</Link>
           </li>
-          <li>
-            <Link href="/shop">Shop</Link>
-          </li>
-          <li>
-            <Link href="/categories">Categories</Link>
-          </li>
 
-          {session?.user?.role && (
+          {!session && (
             <li>
-              <Link href="/cart">Cart</Link>
+              <Link href="/categories">Categories</Link>
             </li>
           )}
 
-          {!session ? (
+          {session && (
             <li>
-              <Link href="/login">Login</Link>
+              <Link href="/shop">Shop</Link>
             </li>
-          ) : (
+          )}
+
+          {session ? (
             <>
-              {session.user?.role === "artisan" && (
+              <li>
+                <Link href="/profile">Profile</Link>
+              </li>
+              {session.user.role === "artisan" && (
                 <li>
                   <Link href="/seller/dashboard">Dashboard</Link>
                 </li>
               )}
-
-              <li>
-                <Link href="/profile">My Profile</Link>
-              </li>
-
               <li>
                 <button
                   className="nav-logout"
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  style={{
-                    cursor: "pointer",
-                    background: "none",
-                    border: "none",
-                    color: "inherit",
-                    font: "inherit",
-                  }}
                 >
                   Logout
                 </button>
               </li>
             </>
+          ) : (
+            <li>
+              <Link href="/login">Login</Link>
+            </li>
           )}
         </ul>
       </nav>
