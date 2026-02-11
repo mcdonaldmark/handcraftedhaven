@@ -28,23 +28,21 @@ export default function Header() {
           <li>
             <Link href="/">Home</Link>
           </li>
+          <li>
+            <Link href="/shop">Shop</Link>
+          </li>
+          <li>
+            <Link href="/cart">Cart</Link>
+          </li>
 
-          {!session && (
-            <li>
-              <Link href="/categories">Categories</Link>
-            </li>
-          )}
 
           {session && (
             <>
-              <li>
-                <Link href="/shop">Shop</Link>
+             <li>
+                 <Link href="/categories">Categories</Link>
               </li>
               <li>
                 <Link href="/profile">Profile</Link>
-              </li>
-              <li>
-                <Link href="/cart">Cart</Link>
               </li>
               {session.user?.role === "artisan" && (
                 <li>

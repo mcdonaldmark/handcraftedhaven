@@ -15,9 +15,16 @@ export default function CartPage() {
   const [message, setMessage] = useState("");
 
   const fetchCart = async () => {
+
+    const sessionId = localStorage.getItem("session_id") || crypto.randomUUID();
+    localStorage.setItem("session_id", sessionId);
+
     try {
-      const res = await fetch("/api/cart");
+      const res = await fetch("/api/cart", { headers: { "x-session-id": sessionId } });
+
+
       const data = await res.json();
+      console.log('data', data);
       setCartItems(data);
     } catch (err) {
       console.error(err);
@@ -30,9 +37,13 @@ export default function CartPage() {
 
   const handleRemove = async (id: string) => {
     try {
+
+      const sessionId = localStorage.getItem("session_id") || crypto.randomUUID();
+      localStorage.setItem("session_id", sessionId);
+
       const res = await fetch("/api/cart", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-session-id": sessionId },
         body: JSON.stringify({ productId: id }),
       });
 
@@ -52,17 +63,21 @@ export default function CartPage() {
   );
 
   return (
-    <section className="section">
-      <h3>My Cart</h3>
+    <section className="section" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 1rem', fontFamily: 'system-ui, sans-serif' }}>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+        My Cart
+      </h3>
 
       {message && (
-        <p style={{ color: "green", fontWeight: 600, marginBottom: "1rem" }}>
+        <div style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '10px 15px', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '14px' }}>
           {message}
-        </p>
+        </div>
       )}
 
       {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
+        <div style={{ textAlign: 'center', padding: '3rem 0', color: '#888' }}>
+          <p>Your cart is empty.</p>
+        </div>
       ) : (
         <div>
           {cartItems.map((item) => (
@@ -72,39 +87,59 @@ export default function CartPage() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
+                gap: "1rem",
+                padding: "1rem",
                 marginBottom: "1rem",
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                border: "1px solid #f0f0f0"
               }}
             >
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-              >
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    width={80}
-                    height={80}
-                    style={{ objectFit: "cover", borderRadius: "6px" }}
-                  />
-                )}
-                <div>
-                  <h4>{item.name}</h4>
-                  <p>
-                    ${item.price.toFixed(2)} × {item.quantity}
+              {item.imageUrl && (
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  width={70}
+                  height={70}
+                  style={{ objectFit: "cover", borderRadius: "8px", flexShrink: 0 }}
+                />
+              )}
+
+
+              <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+
+
+                <div style={{ flex: 1, textAlign: "left" }}>
+                  <h4 style={{ margin: 0, fontSize: '1rem', color: '#333', fontWeight: '600' }}>
+                    {item.name}
+                  </h4>
+                </div>
+
+
+                <div style={{ width: "120px", textAlign: "right", flexShrink: 0 }}>
+                  <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
+                    <span style={{ fontWeight: 600, color: '#000' }}>${item.price.toFixed(2)}</span>
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#999' }}>
+                    Qty: {item.quantity}
                   </p>
                 </div>
               </div>
 
+
               <button
                 onClick={() => handleRemove(item.id)}
                 style={{
-                  backgroundColor: "#e74c3c",
-                  color: "#fff",
-                  border: "none",
-                  padding: "0.5rem 1rem",
+                  backgroundColor: "transparent",
+                  color: "#ff4d4f",
+                  border: "1px solid #ff4d4f",
+                  padding: "0.4rem 0.8rem",
                   borderRadius: "6px",
                   cursor: "pointer",
+                  fontSize: "12px",
+                  fontWeight: "500",
+                  flexShrink: 0
                 }}
               >
                 Remove
@@ -112,22 +147,30 @@ export default function CartPage() {
             </div>
           ))}
 
-          <p style={{ fontWeight: 600 }}>Total: ${totalPrice.toFixed(2)}</p>
+          <div style={{ marginTop: '2rem', padding: '1.5rem', borderTop: '2px solid #f0f0f0', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <p style={{ fontSize: '1.25rem', margin: 0 }}>
+              Total: <span style={{ fontWeight: 700 }}>${totalPrice.toFixed(2)}</span>
+            </p>
 
-          <button
-            style={{
-              marginTop: "1rem",
-              backgroundColor: "#27ae60",
-              color: "#fff",
-              border: "none",
-              padding: "0.75rem 1.5rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
-            onClick={() => alert("Checkout flow coming soon!")}
-          >
-            Checkout
-          </button>
+            <button
+              style={{
+                marginTop: "1.5rem",
+                backgroundColor: "#111",
+                color: "#fff",
+                border: "none",
+                padding: "1rem 2rem",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "1rem",
+                fontWeight: "600",
+                width: "100%",
+                maxWidth: "300px"
+              }}
+              onClick={() => alert("Checkout flow coming soon!")}
+            >
+              Checkout Now
+            </button>
+          </div>
         </div>
       )}
     </section>

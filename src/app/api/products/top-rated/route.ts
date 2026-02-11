@@ -43,6 +43,7 @@ export async function GET() {
             const group = topRatedGroups.find(g => g.productId === product.id);
             return {
                 ...product,
+                price: Number(product.price),
                 avgRating: group?._avg.rating || 0
             };
         }).sort((a, b) => b.avgRating - a.avgRating);
