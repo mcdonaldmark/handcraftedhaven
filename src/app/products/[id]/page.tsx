@@ -1,16 +1,19 @@
+
+
 import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
 import Reviews from "@/app/components/reviews";
 import Gallery from "@/app/components/gallery";
+import AddToCartButton from "@/app/components/addToCart";
 
 const prisma = new PrismaClient();
 
 interface ProductPageProps {
-  params: Promise<{ id: string }>; // ✅ Next.js expects a Promise here for API/page route
+  params: Promise<{ id: string }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { id } = await params; // ✅ await the params promise
+  const { id } = await params;
 
   const product = await prisma.product.findUnique({
     where: { id },
@@ -41,6 +44,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           }}
         >
           <Gallery images={product.images} productName={product.name} />
+
 
           <div className="details">
             <span
@@ -80,13 +84,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {product.description}
               </p>
               <hr style={{ margin: "1.5rem 0", opacity: 0.1 }} />
-              <p>
-                <strong>Artisan:</strong> {product.artisan.name}
-              </p>
-              {/* ✅ Correct link to artisan page */}
-              <a href={`/sellers/${product.artisan.id}`} className="cta">
-                View Artisan Profile
-              </a>
+              By <a style={{ color: "#7a9b8e" }} href={`/sellers/${product.artisan.id}`} >{product.artisan.name}</a>
+              <AddToCartButton product={{
+                id: product.id,
+                name: product.name,
+                price: Number(product.price),
+                imageUrl: product.images[0]?.url,
+              }} />
             </div>
           </div>
         </div>

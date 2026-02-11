@@ -32,15 +32,15 @@ export default function Header() {
           <li>
             <Link href="/shop">Shop</Link>
           </li>
-          <li>
+          {/* <li>
             <Link href="/categories">Categories</Link>
+          </li> */}
+
+
+          <li>
+            <Link href="/cart">Cart</Link>
           </li>
 
-          {session?.user?.role && (
-            <li>
-              <Link href="/cart">Cart</Link>
-            </li>
-          )}
 
           {!session ? (
             <li>

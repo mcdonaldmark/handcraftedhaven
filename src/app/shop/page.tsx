@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from 'next/navigation';
+import { useToast } from "../components/toast/ToastContext";
 
 interface Category {
   id: string;
@@ -15,12 +16,17 @@ interface Product {
   price: number;
   images: { url: string; alt?: string | null }[];
   category: Category;
+  averageRating: number;
+  reviewCount: number;
+  artisan: { name: string; id: string };
 }
 
 export default function ShopPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const showToast = useToast();
+  const router = useRouter();
 
   const fetchData = async () => {
     try {
@@ -44,10 +50,14 @@ export default function ShopPage() {
   }, []);
 
   const handleBuyItNow = async (product: Product) => {
+
+    const sessionId = localStorage.getItem("session_id") || crypto.randomUUID();
+    localStorage.setItem("session_id", sessionId);
+
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-session-id": sessionId },
         body: JSON.stringify({
           id: product.id,
           name: product.name,
@@ -57,13 +67,13 @@ export default function ShopPage() {
       });
 
       if (res.ok) {
-        alert(`${product.name} has been added to your cart!`);
+        showToast(`${product.name} has been added to your cart!`, "success");
       } else {
-        alert("Failed to add to cart.");
+        showToast("Failed to add to cart.", "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Error adding to cart.");
+      showToast("Error adding to cart.", "error");
     }
   };
 
@@ -100,56 +110,78 @@ export default function ShopPage() {
           <div
             key={product.id}
             className="feature-card"
-            style={{ display: "flex", flexDirection: "column" }}
+            onClick={() => router.push(`/products/${product.id}`)}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              cursor: "pointer",
+              position: "relative",
+              padding: "1rem",
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              border: "1px solid #f0f0f0",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-5px)";
+              e.currentTarget.style.boxShadow = "0 8px 15px rgba(0,0,0,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 6px rgba(0,0,0,0.05)";
+            }}
           >
-            {product.images[0] && (
-              <img
-                src={product.images[0].url}
-                alt={product.images[0].alt ?? product.name}
-                style={{
-                  width: "100%",
-                  height: "200px",
-                  objectFit: "cover",
-                  borderRadius: "6px",
-                  marginBottom: "0.5rem",
-                }}
-              />
-            )}
+            <div style={{ position: "relative", width: "100%", height: "200px", marginBottom: "1rem" }}>
+              <div style={{ position: "absolute", display: "flex", alignItems: "center", gap: "0.25rem", backgroundColor: "#fff", top: "0.25rem", right: "0.25rem", color: "rgb(255, 204, 0)", fontWeight: "bold", padding: "0.25rem", borderRadius: "8px" }}>
+                ★
+                <span style={{ color: "#000" }}>{product?.averageRating.toFixed(2) || 0}</span>
+                <span style={{ color: "#000" }}>({product?.reviewCount || 0})</span>
+              </div>
+              {product.images[0] && (
+                <img
+                  src={product.images[0].url}
+                  alt={product.images[0].alt ?? product.name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                  }}
+                />
+              )}
+            </div>
 
-            <h4>{product.name}</h4>
-            <p>${product.price.toFixed(2)}</p>
-
-            <Link
-              href={`/products/${product.id}`}
-              style={{
-                textAlign: "center",
-                padding: "0.75rem",
-                backgroundColor: "#7A9B8E",
-                color: "#fff",
-                textDecoration: "none",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                marginTop: "0.5rem",
-              }}
-            >
-              View Product
-            </Link>
+            <div style={{ flexGrow: 1, marginBottom: "1rem" }}>
+              <span className="feature-card__category">{product.category.name}</span>
+              <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "1.1rem", color: "#333" }}>{product.name}</h4>
+              <small>By {product?.artisan?.name}</small>
+              <p style={{ margin: 0, fontSize: "1.2rem", fontWeight: "700", color: "#2c3e50" }}>
+                ${product.price.toFixed(2)}
+              </p>
+            </div>
 
             <button
-              onClick={() => handleBuyItNow(product)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBuyItNow(product);
+              }}
               style={{
-                textAlign: "center",
-                padding: "0.75rem",
-                backgroundColor: "#e74c3c",
+                width: "100%",
+                padding: "0.8rem",
+                backgroundColor: "#7a9b8e",
                 color: "#fff",
                 border: "none",
-                borderRadius: "6px",
+                borderRadius: "8px",
                 cursor: "pointer",
-                fontWeight: "bold",
-                marginTop: "0.5rem",
+                fontWeight: "600",
+                fontSize: "0.9rem",
+                transition: "background-color 0.2s",
               }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#333")}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#7a9b8e")}
             >
-              Buy It Now
+              Add to Cart
             </button>
           </div>
         ))}
