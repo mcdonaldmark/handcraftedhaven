@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const { data: session } = useSession();
-
-  const closeMenu = () => setMenuOpen(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="site-header">
-      <h1>Handcrafted Haven</h1>
+      <div className="logo">
+        <Link href="/">Handcrafted Haven</Link>
+      </div>
 
       <button
         className="hamburger"
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Toggle menu"
+        onClick={() => setMenuOpen((prev) => !prev)}
       >
         <span className="bar"></span>
         <span className="bar"></span>
@@ -25,55 +24,49 @@ export default function Header() {
       </button>
 
       <nav className={menuOpen ? "open" : ""}>
-        <ul onClick={closeMenu}>
+        <ul>
           <li>
             <Link href="/">Home</Link>
           </li>
           <li>
             <Link href="/shop">Shop</Link>
           </li>
-          {/* <li>
-            <Link href="/categories">Categories</Link>
-          </li> */}
-
-
           <li>
             <Link href="/cart">Cart</Link>
           </li>
 
 
-          {!session ? (
-            <li>
-              <Link href="/login">Login</Link>
-            </li>
-          ) : (
+          {session && (
             <>
+             <li>
+                 <Link href="/categories">Categories</Link>
+              </li>
+              <li>
+                <Link href="/profile">Profile</Link>
+              </li>
               {session.user?.role === "artisan" && (
                 <li>
                   <Link href="/seller/dashboard">Dashboard</Link>
                 </li>
               )}
-
-              <li>
-                <Link href="/profile">My Profile</Link>
-              </li>
-
-              <li>
-                <button
-                  className="nav-logout"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  style={{
-                    cursor: "pointer",
-                    background: "none",
-                    border: "none",
-                    color: "inherit",
-                    font: "inherit",
-                  }}
-                >
-                  Logout
-                </button>
-              </li>
             </>
+          )}
+
+          {!session && (
+            <li>
+              <Link href="/login">Login</Link>
+            </li>
+          )}
+
+          {session && (
+            <li>
+              <button
+                className="nav-logout"
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                Logout
+              </button>
+            </li>
           )}
         </ul>
       </nav>

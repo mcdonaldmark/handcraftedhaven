@@ -1,5 +1,5 @@
 # handcraftedhaven
 
-Team 15:
+Team 15
 Mark McDonald,
 Alexander Nelson

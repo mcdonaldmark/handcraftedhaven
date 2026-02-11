@@ -77,6 +77,7 @@ export default function ShopPage() {
     }
   };
 
+  // Filter products by selected category
   const filteredProducts = selectedCategory
     ? products.filter((p) => p.category.id === selectedCategory)
     : products;
@@ -85,18 +86,48 @@ export default function ShopPage() {
     <section className="section">
       <h2>Shop</h2>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
+      {/* Category Filter Bar */}
+      <div
+        style={{
+          marginBottom: "1rem",
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <button
+          onClick={() => setSelectedCategory("")}
+          style={{
+            padding: "0.5rem 1rem",
+            borderRadius: "6px",
+            border:
+              selectedCategory === "" ? "2px solid #7A9B8E" : "1px solid #ccc",
+            background: selectedCategory === "" ? "#7A9B8E" : "#fff",
+            color: selectedCategory === "" ? "#fff" : "#000",
+            cursor: "pointer",
+          }}
         >
-          <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          All
+        </button>
+        {categories.map((c) => (
+          <button
+            key={c.id}
+            onClick={() => setSelectedCategory(c.id)}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: "6px",
+              border:
+                selectedCategory === c.id
+                  ? "2px solid #7A9B8E"
+                  : "1px solid #ccc",
+              background: selectedCategory === c.id ? "#7A9B8E" : "#fff",
+              color: selectedCategory === c.id ? "#fff" : "#000",
+              cursor: "pointer",
+            }}
+          >
+            {c.name}
+          </button>
+        ))}
       </div>
 
       <div
@@ -185,7 +216,6 @@ export default function ShopPage() {
             </button>
           </div>
         ))}
-
       </div>
     </section>
   );
