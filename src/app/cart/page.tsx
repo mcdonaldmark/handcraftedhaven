@@ -66,9 +66,7 @@ export default function CartPage() {
     0,
   );
 
-  // ✅ Handle checkout click
   const handleCheckout = () => {
-    // Store the latest order in localStorage for confirmation page
     localStorage.setItem("latest_order", JSON.stringify(cartItems));
     router.push("/cart/confirmation");
   };

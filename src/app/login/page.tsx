@@ -68,7 +68,6 @@ export default function LoginPage() {
         </button>
       </form>
 
-      {/* Sign-up gateway */}
       <div
         className="feature-card"
         style={{ marginTop: "2rem", textAlign: "center" }}

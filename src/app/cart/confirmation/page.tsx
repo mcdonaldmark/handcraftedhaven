@@ -15,13 +15,11 @@ export default function ConfirmationPage() {
   const [userType, setUserType] = useState<"customer" | "artisan">("customer");
 
   useEffect(() => {
-    // Retrieve the latest order from localStorage
     const storedOrder = localStorage.getItem("latest_order");
     if (storedOrder) {
       setOrder(JSON.parse(storedOrder));
     }
 
-    // Retrieve user type from localStorage or default to customer
     const storedUserType = localStorage.getItem("user_type");
     if (storedUserType === "artisan" || storedUserType === "customer") {
       setUserType(storedUserType);

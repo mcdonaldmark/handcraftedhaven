@@ -24,14 +24,7 @@ export default function ConfirmationPage() {
 
   const isArtisan = session?.user.role === "artisan";
 
-  // Fetch latest order from server (simulate with API or session)
   useEffect(() => {
-    // In real app, replace this with an API call:
-    // fetch("/api/orders/latest")
-    //   .then(res => res.json())
-    //   .then(data => setOrder(data));
-
-    // Simulated order for demonstration
     const demoOrder: Order = {
       id: crypto.randomUUID(),
       items: [
