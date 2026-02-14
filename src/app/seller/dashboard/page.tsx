@@ -77,19 +77,21 @@ export default function SellerDashboardPage() {
     setIsSubmitting(true);
     setMessage("");
 
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("categoryId", categoryId);
-
-    imageUrls.forEach((url) => formData.append("imageUrls", url));
-
     try {
       const res = await fetch("/api/products", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          description,
+          price: Number(price),
+          categoryId,
+          images: imageUrls,
+        }),
       });
+
       const data = await res.json();
 
       if (!res.ok) {
